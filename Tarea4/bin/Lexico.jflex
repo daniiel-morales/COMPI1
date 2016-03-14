@@ -4,7 +4,7 @@
 
 //-------------------> Importaciones 
 //-------------------> Paquetes 
-package Tools;
+//package Tools;
 import java_cup.runtime.*;
 %%
 %{
@@ -13,7 +13,7 @@ import java_cup.runtime.*;
 
 //-------------------> Directivas
 %public
-%class LexicoCliente
+%class Lexico
 %cupsym Simbolos
 %cup
 %char
@@ -29,11 +29,13 @@ double= (-)?[0-9]+(.[0-9]+)?
 tstring = "\"" ~"\""
 //tchar = "'" ~"'"
 id=[a-zA-Z][a-zA-Z0-9]*
-contra=[a-zA-Z][a-zA-Z0-9]([a-zA-Z0-9]+)[a-zA-Z]
+
 
 //-------------------> Estados
 //%state COMENT_SIMPLE
 //%state COMENT_MULTI
+%state CONTRA_ID
+%state DECIDIR
 
 %%
 /*-------------------------------------------------------------------
@@ -102,13 +104,14 @@ contra=[a-zA-Z][a-zA-Z0-9]([a-zA-Z0-9]+)[a-zA-Z]
 <YYINITIAL> "get" 			{   return new Symbol(Simbolos.gt, yycolumn, yyline, yytext());}
 <YYINITIAL> "N"        		{   return new Symbol(Simbolos.nott, yycolumn, yyline, yytext());}
 <YYINITIAL> "com"        	{   return new Symbol(Simbolos.cm, yycolumn, yyline, yytext());}
+<YYINITIAL> "compi1"        {   return new Symbol(Simbolos.c1, yycolumn, yyline, yytext());}
 
 //-------------------> Datos
 <YYINITIAL> {int}       {   return new Symbol(Simbolos.numero, yycolumn, yyline, yytext());}
-<YYINITIAL> {double}       {   return new Symbol(Simbolos.decimal, yycolumn, yyline, yytext());}
+<YYINITIAL> {double}    {   return new Symbol(Simbolos.decimal, yycolumn, yyline, yytext());}
+<YYINITIAL> {tstring}   {   return new Symbol(Simbolos.cadena, yycolumn, yyline, yytext());}
 <YYINITIAL> {id}        {   return new Symbol(Simbolos.idd	, yycolumn, yyline, yytext());}
-<YYINITIAL> {tstring}    {   return new Symbol(Simbolos.cadena, yycolumn, yyline, yytext());}
-<YYINITIAL> {contra}    {   return new Symbol(Simbolos.pass, yycolumn, yyline, yytext());}
+
 //-------------------> Espacios
 [ \t\r\n\f]              {/* Espacios en blanco, se ignoran */ }
  

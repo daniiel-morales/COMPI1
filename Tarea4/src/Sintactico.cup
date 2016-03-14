@@ -1,0 +1,181 @@
+/*----------------------------------------------------------------------------
+---------------Gramaticas Practica1_201314810-----------------------
+----------------------------------------------------------------------------*/
+
+//-------------------> Importaciones 
+//-------------------> Paquetes 
+//package Tools;
+import java_cup.runtime.Symbol;
+//-------------------> Codigo para el parser, variables, metodos
+parser code
+{:  
+    //-------------------> Metodo al que se llama automaticamente ante algun error sintactico.
+    public void syntax_error(Symbol s)
+    {        
+        System.out.println("Error Sintactico Recuperado /////// lexema: " +s.value+ " Fila: " +s.right+ " Columna: "+s.left);       
+    }
+
+    //-------------------> Metodo al que se llama en el momento en que ya no es posible una recuperacion de errores.
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception
+    {        
+        System.out.println("Error Sintactico Panico ////// Lexema: " +s.value+" Fila: "+s.right+ " Columna: "+s.left);        
+    }
+
+    public void semantic(Symbol cur_token, String n) 
+    {
+        System.out.println("error semantico ");
+    }
+:}
+
+//-------------------> Codigo para las acciones gramaticales
+action code
+{:
+:} 
+
+/*----------------------------------------------------------------------------
+----------------------------------------- Area de Declaraciones
+----------------------------------------------------------------------------*/
+
+//-------------------> Declaración de Terminales
+//-------------------> se les puede indicar x tipo
+//-------------------> cadena es string porque me interesa el valor lexico que trae
+
+terminal String doll,rt,menos,io,co,ta,pro,me,ne,igual,cadena,id,cs,allv,cllv,apar,cpar,numero,decimal,pcoma,mas;
+terminal String dividir,potencia,raiz,por,idd,coma,pd,ao,c1,cm,pto,tel,el,arr,dn,to,po,cod;
+terminal String ig,sl,cd;
+
+//TERMINALES SOLO DEL SERVIDOR
+terminal String acor,ccor,nott,andd,igualdad,orr,gt,cr,ma,tmo;
+
+//-------------------> Declaración de No Terminales
+//-------------------> se les puede indicar x tipo
+non terminal S,RQST,MATE,CLNT,LISTID,DAT,EOA,INITIO,IO,INT,INITCO,CO,INITTA,TA,TA2,INITTA3,TA3,INITPRO,PRO;
+non terminal INITPRO2,PRO2,INITPRO3,PRO3;
+
+//---------------------- Precedencias
+
+//precedence left orr;
+precedence left igual;
+//precedence left andd;
+//precedence left igualdad;
+precedence left mas, menos;
+precedence left por, dividir;
+precedence left potencia;
+precedence left raiz;
+precedence left apar,cpar;
+
+//-------------------> No Terminal inicial
+start with S;
+
+/*----------------------------------------------------------------------------
+----------------------------------------- Area de Gramatica
+----------------------------------------------------------------------------*/
+
+S::= doll CLNT
+//	| S
+	;
+CLNT::= rt doll doll RQST doll rt menos doll
+	|	me ne igual cadena doll MATE doll me menos doll
+	;
+MATE::= idd apar LISTID cpar igual allv EOA cllv pcoma
+	|	cs idd igual DAT pcoma
+	;
+DAT::= cadena
+	| INT
+	;
+INT::= numero
+	| decimal
+	;
+EOA::= EOA mas INT
+	| EOA menos INT
+	| EOA dividir INT
+	| EOA por INT
+	| EOA raiz apar INT coma INT cpar
+	| EOA potencia apar INT coma INT cpar
+	| apar EOA cpar
+	| INT
+	;
+LISTID::= LISTID coma idd
+	| idd
+	;
+RQST::= io doll doll INITIO doll io menos doll
+	|  co doll doll INITCO doll co menos doll
+//	|  ta INITTA doll ta menos doll
+//	|  pro INITPRO doll pro menos doll
+	;
+INITIO::= INITIO doll IO
+	| IO
+	;
+IO::= id doll numero doll id menos doll 
+	| pd doll idd doll pd menos doll 
+	;
+INITCO::= INITCO doll CO
+		| CO
+		;
+CO::= id doll numero doll id menos doll
+	| ne doll cadena doll ne menos doll
+	| ao doll cadena doll ao menos doll
+	| pd doll idd:ca doll pd menos doll
+	| tel doll numero doll tel menos doll
+	| el doll idd arr c1 pto cm doll el menos doll 
+	| dn doll cadena doll dn menos doll 
+	;
+INITTA::= to igual cadena TA
+	| co igual numero TA2 doll
+	| po igual numero TA2 doll
+	| ne igual cadena TA2 doll
+	| dn igual cadena TA2 doll
+	| tel igual numero TA2 doll
+	;
+TA::= doll INITTA3
+	| coma TA2
+	;
+TA2::= TA2 coma to igual cadena
+	| TA2 coma co igual numero
+	| TA2 coma po igual numero 
+	| TA2 coma ne igual cadena 
+	| TA2 coma dn igual cadena 
+	| TA2 coma tel igual numero
+	| tel igual numero 
+	| dn igual cadena 
+	| ne igual cadena 
+	| po igual numero
+	| co igual numero
+	| to igual cadena 
+	;
+
+INITTA3::= INITTA3 doll TA3
+	| TA3
+	;
+TA3::= cod doll numero doll cod menos doll
+	| po doll numero doll po menos doll
+	| ne doll cadena doll ne menos doll
+	| dn doll cadena doll dn menos doll
+	| tel doll numero doll tel menos doll
+	| ig doll cadena doll ig menos doll
+	;
+
+INITPRO::= to igual cadena PRO
+		| PRO3 INITPRO3
+		;
+PRO::= doll doll INITPRO2
+		| PRO3 INITPRO3
+ 		;
+INITPRO2::= INITPRO2 doll PRO2
+		| PRO2
+		;
+PRO2::= to doll cadena doll to menos doll
+		| cod doll numero doll cod menos doll
+		| sl doll numero doll sl menos doll
+		| ne doll cadena doll ne menos doll
+		| cd doll allv EOA cllv doll cd menos doll
+		;
+INITPRO3::= INITPRO3 PRO3
+		| PRO3
+		;
+PRO3::= to igual cadena
+		| cod igual numero
+		| sl igual numero
+		| ne igual cadena
+		| cd igual allv EOA cllv
+		;
