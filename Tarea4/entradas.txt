@@ -1,0 +1,26 @@
+$mate nombre="restas"$
+MenosCinco(v1)= {v1- 5};
+RestaDeTres(v1,v2,v3)= {v1-v2-v3};
+Cons description="esta es la mejor tienda que podrías haber imaginado";
+Cons pan="pantalon";
+$mate-$
+
+$request$
+$InicioUsuario$
+$id$ 1$id-$
+$password$ a1234b$password-$
+$InicioUsuario-$
+$request-$
+
+$request$
+$CrearUsuario$
+$id$1$id-$
+$nombre$ "nombre del usuario" $nombre-$
+$apellido$ "apellido del usuario" $apellido-$
+$password$ a1234b$password-$
+$telefono$ 12345678$telefono-$
+$email$ correo@compi1.com$email-$
+$direccion$ "direccion del usuario" $direccion-$$CrearUsuario-$$request-$
+
+//CUALQUIER COMBINACION DE ESOS MODULOS MATE, EOA, CREAR USUARIO, INICIAR USUARIO Y PUEDEN VENIR SEGUIDOS MUCHOS REQUEST CON MATE ETC.
+

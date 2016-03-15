@@ -6,9 +6,11 @@
 //-------------------> Paquetes 
 //package Tools;
 import java_cup.runtime.Symbol;
+import java.util.ArrayList;
 //-------------------> Codigo para el parser, variables, metodos
 parser code
 {:  
+	public Nodo raiz;
     //-------------------> Metodo al que se llama automaticamente ante algun error sintactico.
     public void syntax_error(Symbol s)
     {        
@@ -49,11 +51,12 @@ terminal String acor,ccor,nott,andd,igualdad,orr,gt,cr,ma,tmo;
 
 //-------------------> Declaración de No Terminales
 //-------------------> se les puede indicar x tipo
-non terminal S,RQST,INITMATE,MATE,CLNT,LISTID,DAT,EOA,INITIO,IO,INT,INITCO,CO,INITTA,TA,TA2,INITTA3,TA3,INITPRO,PRO;
-non terminal INITPRO2,PRO2,INITPRO3,PRO3,VAR;
+non terminal Nodo S,RQST,INITMATE,MATE,CLNT,LISTID,DAT,EOA,INITIO,IO,INT,INITCO,CO,INITTA,TA,TA2,INITTA3,TA3,INITPRO,PRO;
+non terminal Nodo INITPRO2,PRO2,INITPRO3,PRO3,VAR,TA4,COD;
 
 //---------------------- Precedencias
 
+//precedence left doll;
 //precedence left orr;
 precedence left igual;
 //precedence left andd;
@@ -71,96 +74,428 @@ start with S;
 ----------------------------------------- Area de Gramatica
 ----------------------------------------------------------------------------*/
 
-S::= S doll CLNT
-	| doll CLNT
+S::= COD:raiz
+	{:
+		parser.raiz=raiz;
+	:}
 	;
-CLNT::= rt doll doll RQST doll rt menos doll
-	|	me ne igual cadena doll INITMATE doll me menos doll
+COD::= COD:cod doll CLNT:cln
+	{:
+		Nodo codigo=new Nodo("codigo");
+		codigo.hijos.add(cod);
+		codigo.hijos.add(cln);
+		RESULT=codigo;				
+	:}
+	| doll CLNT:cn
+	{:
+		RESULT=cn;
+	:}
 	;
-INITMATE::= INITMATE MATE
-		| MATE
+CLNT::= rt:rr doll doll RQST:rqs doll rt menos doll
+	{:
+		Nodo rqst=new Nodo(rr,rrleft,rrright);
+		rqst.hijos.add(rqs);
+		RESULT=rqst;
+	:}
+	|	me ne:nom igual cadena:no doll INITMATE:init doll me menos doll
+	{:
+		Nodo mat=new Nodo(nom,nomleft,nomright);
+		Nodo nombr=new Nodo(no,nomleft,nomright);
+		mat.hijos.add(nombr);
+		mat.hijos.add(init);
+		RESULT=mat;
+	:}
+	;
+INITMATE::= INITMATE:init MATE:ma
+		{:
+			Nodo mat=new Nodo("Constantes");
+			mat.hijos.add(init);
+			mat.hijos.add(ma);
+			RESULT=mat;
+		:}
+		| MATE:mat
+		{:
+			RESULT=mat;
+		:}
 		;
-MATE::= idd apar LISTID cpar igual allv EOA cllv pcoma
-	|	cs idd igual DAT pcoma
+MATE::= idd:ii apar LISTID:ld cpar igual allv EOA:eoa cllv pcoma
+	{:
+		Nodo mate=new Nodo(ii,iileft,iiright);
+		Nodo vars=new Nodo("atribs");
+		vars.hijos.add(ld);
+		Nodo metodo=new Nodo("metodo");
+		metodo.hijos.add(eoa);
+		mate.hijos.add(vars);
+		mate.hijos.add(metodo);
+		RESULT=mate;
+	:}
+	|	cs:c idd:ii igual DAT:d pcoma
+	{:
+		Nodo cons=new Nodo(c,cleft,cright);
+		Nodo identi=new Nodo(ii,iileft,iiright);
+		identi.hijos.add(d);
+		cons.hijos.add(identi);
+		RESULT=cons;
+	:}
 	;
-DAT::= cadena
-	| INT
+DAT::= cadena:ca
+	{:
+		Nodo cadena =new Nodo(ca,caleft,caright);
+		RESULT=cadena;
+	:}
+	| VAR:var
+	{:
+		RESULT=var;
+	:}
 	;
-VAR::= idd
-	| INT
+VAR::= idd:idd
+	{:
+		Nodo identi =new Nodo(idd,iddleft,iddright);
+		RESULT=identi;
+	:}
+	| INT:intt
+	{:
+		RESULT=intt;
+	:}
 	;
-INT::= numero
-	| decimal
+INT::= numero:num
+	{:
+		Nodo numero =new Nodo(num,numleft,numright);
+		RESULT=numero;
+	:}
+	| decimal:dec
+	{:
+		Nodo decimal =new Nodo(dec,decleft,decright);
+		RESULT=decimal;
+	:}
 	;
-EOA::= EOA mas VAR
-	| EOA menos VAR
-	| EOA dividir VAR
-	| EOA por VAR
+EOA::= EOA:izq mas:pad VAR:der
+	{:
+		Nodo padre = new Nodo (pad,padleft,padright);
+		padre.hijos.add(izq);
+		padre.hijos.add(der);
+		RESULT=padre;
+	:}
+	| EOA:izq menos:pad VAR:der
+	{:
+		Nodo padre = new Nodo (pad,padleft,padright);
+		padre.hijos.add(izq);
+		padre.hijos.add(der);
+		RESULT=padre;
+	:}
+	| EOA:izq dividir:pad VAR:der
+	{:
+		Nodo padre = new Nodo (pad,padleft,padright);
+		padre.hijos.add(izq);
+		padre.hijos.add(der);
+		RESULT=padre;
+	:}
+	| EOA:izq por:pad VAR:der
+	{:
+		Nodo padre = new Nodo (pad,padleft,padright);
+		padre.hijos.add(izq);
+		padre.hijos.add(der);
+		RESULT=padre;
+	:}
 	| EOA raiz apar VAR coma VAR cpar
+	{:
+		
+	:}
 	| EOA potencia apar VAR coma VAR cpar
-	| apar EOA cpar
-	| VAR
+	{:
+		
+	:}
+	| apar EOA:e cpar
+	{:
+		RESULT=e;
+	:}
+	| VAR:var
+	{:
+		RESULT=var;
+	:}
 	;
-LISTID::= LISTID coma idd
-	| idd
+LISTID::= LISTID:list coma idd:id
+	{:
+		Nodo lista=new Nodo("ids");
+		Nodo identi=new Nodo(id,idleft,idright);
+		lista.hijos.add(list);
+		lista.hijos.add(identi);
+		RESULT=lista;
+	:}
+	| idd:id
+	{:
+		Nodo identi =new Nodo(id,idleft,idright);
+		RESULT=identi;
+	:}
 	;
-RQST::= io doll doll INITIO doll io menos doll
-	|  co doll doll INITCO doll co menos doll
+RQST::= io:pad doll doll INITIO:hij doll io menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       padre.hijos.add(hij);
+       RESULT = padre;
+	:}
+	|  co:pad doll doll INITCO:hij doll co menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       padre.hijos.add(hij);
+       RESULT = padre;
+	:}
 //	|  ta INITTA doll ta menos doll
 //	|  pro INITPRO doll pro menos doll
 	;
-INITIO::= INITIO doll IO
-	| IO
+INITIO::= INITIO:init doll IO:co
+	{:
+		Nodo crear = new Nodo("login");
+		crear.hijos.add(init);
+		crear.hijos.add(co);
+		RESULT=crear;
+	:}
+	| IO:io
+	{:
+		RESULT=io;
+	:}
 	;
-IO::= id doll numero doll id menos doll 
-	| pd doll idd doll pd menos doll 
+IO::= id:pad doll numero:hij doll id menos doll 
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	| pd:pad doll idd:hij doll pd menos doll 
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
 	;
-INITCO::= INITCO doll CO
-		| CO
+INITCO::= INITCO:init doll CO:co
+		{:
+			Nodo crear = new Nodo("crearUsuario");
+			crear.hijos.add(init);
+			crear.hijos.add(co);
+			RESULT=crear;
+		:}
+		| CO:co
+		{:
+			RESULT=co;
+		:}
 		;
-CO::= id doll numero doll id menos doll
-	| ne doll cadena doll ne menos doll
-	| ao doll cadena doll ao menos doll
-	| pd doll idd:ca doll pd menos doll
-	| tel doll numero doll tel menos doll
-	| el doll idd arr c1 pto cm doll el menos doll 
-	| dn doll cadena doll dn menos doll 
+CO::= id:pad doll numero:hij doll id menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	| ne:pad doll cadena:hij doll ne menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	| ao:pad doll cadena:hij doll ao menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	| pd:pad doll idd:hij doll pd menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	| tel:pad doll numero:hij doll tel menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	| el:pad doll idd:id arr:a c1:c pto:p cm:m doll el menos doll 
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(id+a+c+p+m, idleft, mright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	| dn:dn1 doll cadena:ca doll dn menos doll
+	{:
+            Nodo dir = new Nodo(dn1, dn1right, dn1left);
+            Nodo cad = new Nodo(ca, caright, caleft);
+            dir.hijos.add(cad);
+            RESULT = dir;
+    :} 
 	;
-INITTA::= to igual cadena TA
-	| co igual numero TA2 doll
-	| po igual numero TA2 doll
-	| ne igual cadena TA2 doll
-	| dn igual cadena TA2 doll
-	| tel igual numero TA2 doll
+	
+INITTA::= to:pad igual cadena:hij1 TA:hij2
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo1 = new Nodo(hij1, hij1left, hij1right);
+       padre.hijos.add(hijo1);
+       padre.hijos.add(hij2);
+       RESULT = padre;
+	:}
+	| co:pad igual numero:hij1 TA2:hij2 menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo1 = new Nodo(hij1, hij1left, hij1right);
+       padre.hijos.add(hijo1);
+       padre.hijos.add(hij2);
+       RESULT = padre;
+	:}
+	| po:pad igual numero:hij1 TA2:hij2 menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo1 = new Nodo(hij1, hij1left, hij1right);
+       padre.hijos.add(hijo1);
+       padre.hijos.add(hij2);
+       RESULT = padre;
+	:}
+	| ne:pad igual cadena:hij1 TA2:hij2 menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo1 = new Nodo(hij1, hij1left, hij1right);
+       padre.hijos.add(hijo1);
+       padre.hijos.add(hij2);
+       RESULT = padre;
+	:}
+	| dn:pad igual cadena:hij1 TA2:hij2 menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo1 = new Nodo(hij1, hij1left, hij1right);
+       padre.hijos.add(hijo1);
+       padre.hijos.add(hij2);
+       RESULT = padre;
+	:}
+	| tel:pad igual numero:hij1 TA2:hij2 menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo1 = new Nodo(hij1, hij1left, hij1right);
+       padre.hijos.add(hijo1);
+       padre.hijos.add(hij2);
+       RESULT = padre;
+	:}
 	;
-TA::= doll INITTA3
-	| coma TA2
+TA::= coma TA2:ta2
+	{:
+		RESULT=ta2;
+	:}
+// 	| menos doll INITTA3
 	;
-TA2::= TA2 coma to igual cadena
-	| TA2 coma co igual numero
-	| TA2 coma po igual numero 
-	| TA2 coma ne igual cadena 
-	| TA2 coma dn igual cadena 
-	| TA2 coma tel igual numero
-	| tel igual numero 
-	| dn igual cadena 
-	| ne igual cadena 
-	| po igual numero
-	| co igual numero
-	| to igual cadena 
+TA2::= TA2:ta2 coma TA4:ta4
+	{:
+		Nodo tienda = new Nodo("tienda");
+		tienda.hijos.add(ta2);
+		tienda.hijos.add(ta4);
+		RESULT=tienda;
+	:}
+	| TA4:ta4
+	{:
+		RESULT=ta4;
+	:}
 	;
-
+TA4::=tel:pad igual numero:hij 
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	| dn:pad igual cadena:hij
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:} 
+	| ne:pad igual cadena:hij 
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	| po:pad igual numero:hij
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	| cod:pad igual numero:hij
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	| to:pad igual cadena:hij
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	;
+	
+	
+	
+/*
 INITTA3::= INITTA3 doll TA3
-	| TA3
+	| TA3:ta3
+	{:
+		RESULT=ta3;
+	:}
 	;
-TA3::= cod doll numero doll cod menos doll
-	| po doll numero doll po menos doll
-	| ne doll cadena doll ne menos doll
-	| dn doll cadena doll dn menos doll
-	| tel doll numero doll tel menos doll
-	| ig doll cadena doll ig menos doll
+TA3::= cod:pad doll numero:hij doll cod menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	| po:pad doll numero:hij doll po menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	| ne:pad doll cadena:hij doll ne menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	| dn:pad doll cadena:hij doll dn menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	| tel:pad doll numero:hij doll tel menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
+	| ig:pad doll cadena:hij doll ig menos doll
+	{:
+		Nodo padre = new Nodo(pad, padleft, padright);
+       Nodo hijo = new Nodo(hij, hijleft, hijright);
+       padre.hijos.add(hijo);
+       RESULT = padre;
+	:}
 	;
-
 INITPRO::= to igual cadena PRO
 		| PRO3 INITPRO3
 		;
@@ -185,3 +520,4 @@ PRO3::= to igual cadena
 		| ne igual cadena
 		| cd igual allv EOA cllv
 		;
+*/

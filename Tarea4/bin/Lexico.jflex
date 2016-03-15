@@ -19,7 +19,7 @@ import java_cup.runtime.*;
 %char
 %column
 %full
-//%ignorecase
+%ignorecase
 %line
 %unicode
 

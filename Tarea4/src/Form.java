@@ -44,6 +44,8 @@ public class Form extends JFrame{
 		Sintactico analizador_sintactico = new Sintactico(analizador_lexico);       
 	    try {
 			analizador_sintactico.parse();
+			Graficador g = new Graficador();
+           g.graficarAST(analizador_sintactico.raiz);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
