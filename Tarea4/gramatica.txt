@@ -1,0 +1,114 @@
+S::= S doll CLNT
+	| doll CLNT
+	;
+CLNT::= rt doll doll RQST doll rt menos doll
+	|	me ne igual cadena doll INITMATE doll me menos doll
+	;
+INITMATE::= INITMATE MATE
+		| MATE
+		;
+MATE::= idd apar LISTID cpar igual allv EOA cllv pcoma
+	|	cs idd igual DAT pcoma
+	;
+DAT::= cadena
+	| INT
+	;
+VAR::= idd
+	| INT
+	;
+INT::= numero
+	| decimal
+	;
+EOA::= EOA mas VAR
+	| EOA menos VAR
+	| EOA dividir VAR
+	| EOA por VAR
+	| EOA raiz apar VAR coma VAR cpar
+	| EOA potencia apar VAR coma VAR cpar
+	| apar EOA cpar
+	| VAR
+	;
+LISTID::= LISTID coma idd
+	| idd
+	;
+RQST::= io doll doll INITIO doll io menos doll
+	|  co doll doll INITCO doll co menos doll
+	|  ta INITTA doll ta menos doll
+	|  pro INITPRO doll pro menos doll
+	;
+INITIO::= INITIO doll IO
+	| IO
+	;
+IO::= id doll numero doll id menos doll 
+	| pd doll idd doll pd menos doll 
+	;
+INITCO::= INITCO doll CO
+		| CO
+		;
+CO::= id doll numero doll id menos doll
+	| ne doll cadena doll ne menos doll
+	| ao doll cadena doll ao menos doll
+	| pd doll idd:ca doll pd menos doll
+	| tel doll numero doll tel menos doll
+	| el doll idd arr c1 pto cm doll el menos doll 
+	| dn doll cadena doll dn menos doll 
+	;
+INITTA::= to igual cadena TA
+	| co igual numero TA2 doll
+	| po igual numero TA2 doll
+	| ne igual cadena TA2 doll
+	| dn igual cadena TA2 doll
+	| tel igual numero TA2 doll
+	;
+TA::= doll INITTA3
+	| coma TA2
+	;
+TA2::= TA2 coma to igual cadena
+	| TA2 coma co igual numero
+	| TA2 coma po igual numero 
+	| TA2 coma ne igual cadena 
+	| TA2 coma dn igual cadena 
+	| TA2 coma tel igual numero
+	| tel igual numero 
+	| dn igual cadena 
+	| ne igual cadena 
+	| po igual numero
+	| co igual numero
+	| to igual cadena 
+	;
+
+INITTA3::= INITTA3 doll TA3
+	| TA3
+	;
+TA3::= cod doll numero doll cod menos doll
+	| po doll numero doll po menos doll
+	| ne doll cadena doll ne menos doll
+	| dn doll cadena doll dn menos doll
+	| tel doll numero doll tel menos doll
+	| ig doll cadena doll ig menos doll
+	;
+
+INITPRO::= to igual cadena PRO
+		| PRO3 INITPRO3
+		;
+PRO::= doll doll INITPRO2
+		| PRO3 INITPRO3
+ 		;
+INITPRO2::= INITPRO2 doll PRO2
+		| PRO2
+		;
+PRO2::= to doll cadena doll to menos doll
+		| cod doll numero doll cod menos doll
+		| sl doll numero doll sl menos doll
+		| ne doll cadena doll ne menos doll
+		| cd doll allv EOA cllv doll cd menos doll
+		;
+INITPRO3::= INITPRO3 PRO3
+		| PRO3
+		;
+PRO3::= to igual cadena
+		| cod igual numero
+		| sl igual numero
+		| ne igual cadena
+		| cd igual allv EOA cllv
+		;
