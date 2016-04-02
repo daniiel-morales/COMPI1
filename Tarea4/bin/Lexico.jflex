@@ -78,6 +78,10 @@ id=[a-zA-Z][a-zA-Z0-9]*
 <YYINITIAL> "."         {   return new Symbol(Simbolos.pto, yycolumn, yyline, yytext());}
 
 //-------------------> Palabras Reservadas
+<YYINITIAL> "\"crear\""      	{   return new Symbol(Simbolos.car, yycolumn, yyline, yytext());}
+<YYINITIAL> "\"modificacion\""  {   return new Symbol(Simbolos.mn, yycolumn, yyline, yytext());}
+<YYINITIAL> "\"eliminar\""      {   return new Symbol(Simbolos.er, yycolumn, yyline, yytext());}
+
 <YYINITIAL> "request"      	{   return new Symbol(Simbolos.rt, yycolumn, yyline, yytext());}
 <YYINITIAL> "InicioUsuario"	{   return new Symbol(Simbolos.io, yycolumn, yyline, yytext());}
 <YYINITIAL> "id"				{   return new Symbol(Simbolos.id, yycolumn, yyline, yytext());}

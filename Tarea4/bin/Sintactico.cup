@@ -40,7 +40,7 @@ action code
 //-------------------> se les puede indicar x tipo
 //-------------------> cadena es string porque me interesa el valor lexico que trae
 
-terminal String doll,rt,menos,io,co,ta,pro,me,ne,igual,cadena,id,cs,allv,cllv,apar,cpar,numero,decimal,pcoma,mas;
+terminal String doll,rt,menos,io,co,ta,pro,me,ne,igual,cadena,car,mn,er,id,cs,allv,cllv,apar,cpar,numero,decimal,pcoma,mas;
 terminal String dividir,potencia,raiz,por,idd,coma,pd,ao,c1,cm,pto,tel,el,arr,dn,to,po,cod;
 terminal String ig,sl,cd;
 
@@ -50,7 +50,7 @@ terminal String acor,ccor,nott,andd,igualdad,orr,gt,cr,ma,tmo;
 //-------------------> Declaración de No Terminales
 //-------------------> se les puede indicar x tipo
 non terminal S,RQST,INITMATE,MATE,CLNT,LISTID,DAT,EOA,INITIO,IO,INT,INITCO,CO,INITTA,TA,TA2,INITTA3,TA3,INITPRO,PRO;
-non terminal INITPRO2,PRO2,INITPRO3,PRO3,VAR;
+non terminal INITPRO2,PRO2,INITPRO3,PRO3,VAR,SCC;
 
 //---------------------- Precedencias
 
@@ -106,7 +106,7 @@ LISTID::= LISTID coma idd
 	;
 RQST::= io doll doll INITIO doll io menos doll
 	|  co doll doll INITCO doll co menos doll
-//	|  ta INITTA doll ta menos doll
+	|  ta INITTA ta menos doll
 //	|  pro INITPRO doll pro menos doll
 	;
 INITIO::= INITIO doll IO
@@ -126,13 +126,17 @@ CO::= id doll numero doll id menos doll
 	| el doll idd arr c1 pto cm doll el menos doll 
 	| dn doll cadena doll dn menos doll 
 	;
-INITTA::= to igual cadena TA
-	| co igual numero TA2 doll
-	| po igual numero TA2 doll
-	| ne igual cadena TA2 doll
-	| dn igual cadena TA2 doll
-	| tel igual numero TA2 doll
+INITTA::= to igual SCC
+	| co igual numero TA2 doll doll
+	| po igual numero TA2 doll doll
+	| ne igual cadena TA2 doll doll
+	| dn igual cadena TA2 doll doll
+	| tel igual numero TA2 doll doll
 	;
+SCC::= car INITTA3 doll
+	| mn TA2
+	| er TA2
+	; 
 TA::= doll INITTA3
 	| coma TA2
 	;
@@ -150,15 +154,15 @@ TA2::= TA2 coma to igual cadena
 	| to igual cadena 
 	;
 
-INITTA3::= INITTA3 doll TA3
-	| TA3
+INITTA3::= INITTA3 doll TA3 doll
+	| doll TA3 doll
 	;
-TA3::= cod doll numero doll cod menos doll
-	| po doll numero doll po menos doll
-	| ne doll cadena doll ne menos doll
-	| dn doll cadena doll dn menos doll
-	| tel doll numero doll tel menos doll
-	| ig doll cadena doll ig menos doll
+TA3::= cod doll numero doll cod menos
+	| po doll numero doll po menos
+	| ne doll cadena doll ne menos
+	| dn doll cadena doll dn menos
+	| tel doll numero doll tel menos
+	| ig doll cadena doll ig menos
 	;
 
 INITPRO::= to igual cadena PRO
